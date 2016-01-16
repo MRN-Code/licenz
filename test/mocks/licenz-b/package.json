@@ -1,0 +1,11 @@
+{
+  "dependencies": {
+    "licenz-b-a": "1.0.0",
+    "licenz-b-b": "1.0.0",
+    "licenz-b-c": "1.0.0"
+  },
+  "license": "RANDO_LICENSE_DUDE",
+  "name": "licenz-b",
+  "private": true,
+  "version": "1.0.0"
+}
