@@ -5,6 +5,7 @@
   "main": "lib/index.js",
   "bin": "./bin/licenz",
   "scripts": {
+    "lint": "eslint bin lib test",
     "test": "tape 'test/**/*.js'"
   },
   "repository": {
@@ -24,6 +25,7 @@
   },
   "homepage": "https://github.com/MRN-Code/licenz#readme",
   "devDependencies": {
+    "eslint": "^1.10.3",
     "tape": "^4.4.0"
   },
   "dependencies": {
