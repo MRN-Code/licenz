@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Home</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Home</h1>
+
+    
+
+
+
+    
+
+
+    <h3> </h3>
+
+
+
+
+
+
+
+
+
+
+    
+
+
+
+
+    <section>
+        <article><h1>licenz</h1><p><em>Make sure your NPM modules have licenses.</em></p>
+<p><img src="img/licenz.svg" alt="licenz logo"></p>
+<h3>Installation</h3><p>Make sure you have <a href="https://nodejs.org/">Node.js</a> and NPM installed. Then, run the following to use licenz system-wide:</p>
+<pre class="prettyprint source lang-shell"><code>npm install -g licenz</code></pre><p>Alternatively, install it as a development dependency in your current module:</p>
+<pre class="prettyprint source lang-shell"><code>npm install licenz --save-dev</code></pre><h2>Use</h2><h3>CLI</h3><pre class="prettyprint source lang-shell"><code>licenz ./path/to/module/</code></pre><p>Run <code>licenz --help</code> for additional help.</p>
+<h4>White-listing Licenses</h4><p>Does your project’s dependencies have licenses that you know are acceptable? Tell licenz they’re okay by using the <code>--licenses</code> flag:</p>
+<pre class="prettyprint source lang-shell"><code>licenz --licenses &quot;Apache 2, WTFPL, Public Domain&quot; ./path/to/module</code></pre><h4>White-listing Modules</h4><p>A are dependencies licenses undetectable by licenz? No problem! Use the <code>--modules</code> flag to make them pass:</p>
+<pre class="prettyprint source lang-shell"><code>licenz --modules &quot;module-1@1.0.0, module2@^2.1.0&quot; ./path/to/module</code></pre><h2>Programatically</h2><p>Licenz exports a single function which you can <code>require</code>:</p>
+<pre class="prettyprint source lang-js"><code>var licenz = require('licenz');
+
+licenz(options, function(err, res) {
+  if (err) {
+    console.error(err);
+  }
+  console.log(res);
+});</code></pre><p>It expects two optional arguments:</p>
+<ul>
+<li><p><strong><code>options</code> (object):</strong> Hash of configurations for licenz. The following keys are used:</p>
+<ul>
+<li><p><strong><code>path</code> (string):</strong> Path to the directory to scan. Example:</p>
+<pre class="prettyprint source lang-js"><code>var options = {
+  path: './path/to/module'
+};</code></pre></li>
+<li><p><strong><code>whitelistLicenses</code> (array)</strong>: List of licenses to accept. Example:</p>
+<pre class="prettyprint source lang-js"><code>var options = {
+  whitelistLicenses: ['My Cool License', 'My Other License']
+};</code></pre></li>
+<li><p><strong><code>whitelistModules</code> (object)</strong>: List of modules to accept. Use module names as the keys and corresponding semver-compatible versions or ranges as the values:</p>
+<pre class="prettyprint source lang-js"><code>var options = {
+  whitelistModules: {
+    'my-module': '^2.3.0',
+    'my-other-module': '0.5.2',
+    'my-best-module': '~8.0.0'
+  }
+};</code></pre></li>
+</ul>
+</li>
+<li><p><strong><code>callback</code> (function):</strong> Node-style callback function. The “response” is an array of unlicensed module objects. A possible way of dealing with it:</p>
+<pre class="prettyprint source lang-js"><code>licenz(options, function(err, res) {
+  if (err) {
+    return console.error(err);
+  }
+  if (res.length) {
+    res.forEach(function(module) {
+      console.log('Unlicensed: ' + module.name + '@' + module.version);
+    });
+  } else {
+    console.log('All licensed!');
+  }
+});</code></pre><p>In this example, <code>res</code> would be populated with these objects:</p>
+<pre class="prettyprint source lang-js"><code>{
+  licenses: 'UNKNOWN',
+  licenseFile: undefined,
+  name: 'unlicensed-module'
+  repository: 'https://github.com/unlicensed-user/unlicensed-module',
+  version: '1.0.0'
+}</code></pre></li>
+</ul>
+<p>licenz also supports a <code>Promise</code> interface:</p>
+<pre class="prettyprint source lang-js"><code>licenz(options).then(function(results) {
+  console.log(results);
+}).catch(function(error) {
+  console.error(error);
+});</code></pre><h2>Integrating With Pre-Commit</h2><p>Integrating licenz with git’s pre-commit hook is easy using <a href="https://www.npmjs.com/package/pre-commit">pre-commit</a>. Make sure both pre-commit and licenz are installed (<code>npm i pre-commit licenz --save-dev</code>). Then, add a <code>licenz</code> to a script in your <em>package.json</em>:</p>
+<pre class="prettyprint source lang-js"><code>//...
+&quot;scripts&quot;: {
+  &quot;validate&quot;: &quot;licenz&quot;,
+  //...
+}
+//...</code></pre><p>Then, create a <code>precommit</code> key and add the script:</p>
+<pre class="prettyprint source lang-js"><code>//...
+&quot;precommit&quot;: [
+  &quot;validate&quot;,
+  //...
+]
+//...</code></pre></article>
+    </section>
+
+
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-lib_utils_licenses.html">lib/utils/licenses</a></li><li><a href="module-lib_utils_modules.html">lib/utils/modules</a></li><li><a href="module-licenz.html">licenz</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a> on Wed Jan 20 2016 15:42:46 GMT-0800 (PST)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
