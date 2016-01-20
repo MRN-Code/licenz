@@ -13,7 +13,7 @@
     "publish-minor": "npm run preversion && npm version minor && git push origin master --tags && npm publish",
     "publish-major": "npm run preversion && npm version major && git push origin master --tags && npm publish",
     "test": "tape 'test/**/*.js'",
-    "validate": "npm ls"
+    "validate": "npm ls && ./bin/licenz ."
   },
   "repository": {
     "type": "git",
