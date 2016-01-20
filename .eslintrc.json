@@ -5,6 +5,7 @@
     },
     "rules": {
         "indent": 2,
+        "semi": [2, "always"],
         "strict": [2, "global"]
     }
 }
