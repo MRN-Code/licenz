@@ -2,7 +2,7 @@
 
 _Make sure your NPM modules have licenses._
 
-![licenz logo](img/licenz.svg)
+<img src="https://raw.githubusercontent.com/MRN-Code/licenz/master/img/licenz.svg" height="120px" alt="licenz logo" />
 
 ### Installation
 

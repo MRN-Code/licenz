@@ -5,7 +5,7 @@
   "main": "lib/index.js",
   "bin": "./bin/licenz",
   "scripts": {
-    "docs": "jsdoc -d docs -R README.md lib/{*.js,**/*.js} && cp -R img docs",
+    "docs": "jsdoc -d docs -R README.md lib/{*.js,**/*.js}",
     "lint": "eslint bin lib test",
     "postpublish": "npm run docs && gh-pages -d docs",
     "preversion": "git checkout master && git pull && npm ls",
