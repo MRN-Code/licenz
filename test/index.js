@@ -1,9 +1,11 @@
 'use strict';
 
+var concatStream = require('concat-stream');
 var licenses = require('../lib/utils/licenses.js');
 var licenz = require('../lib/index.js');
 var modules = require('../lib/utils/modules.js');
 var path = require('path');
+var spawn = require('child_process').spawn;
 var test = require('tape');
 
 /**
@@ -74,7 +76,7 @@ test('Errors with unknown licenses', function(t) {
                 return {
                     name: item.name,
                     version: item.version,
-                }
+                };
             })
             .sort(function(a, b) {
                 return a.name > b.name;
@@ -140,10 +142,71 @@ test('Whitelist licences', function(t) {
     });
 });
 
-test.skip('CLI passes with known licenses', function(t) {
+test('CLI passes with known licenses', function(t) {
+    t.plan(3);
 
+    var child = spawn('./bin/licenz', [mockAPath], {
+        cwd: path.join(__dirname, '..'),
+    });
+
+    child.stdout.pipe(concatStream(function(data) {
+        t.equal(
+            data.toString().replace(/\n/g, ''),
+            mockAPath + ' 100% licensed!',
+            'Outputs success message'
+        );
+    }));
+
+    /**
+     * license-checker unfortunately writes to stderr on every check.
+     * {@link https://github.com/davglass/license-checker/issues/46}
+     *
+     * @todo  Change to `t.notOk` check
+     */
+    child.stderr.pipe(concatStream(function(data) {
+        t.equal(
+            data.toString().replace(/\n/g, ''),
+            'scanning ' + mockAPath,
+            'No stderr output'
+        );
+    }));
+
+    child.on('close', function(exitCode) {
+        t.equal(exitCode, 0, 'Exited with 0 status code');
+    });
 });
 
-test.skip('CLI errors with unknown licenses', function(t) {
+test('CLI errors with unknown licenses/modules', function(t) {
+    t.plan(4);
 
+    var child = spawn('./bin/licenz', [mockBPath], {
+        cwd: path.join(__dirname, '..')
+    });
+
+    child.stdout.pipe(concatStream(function(data) {
+        t.notOk(data.toString(), 'No standard output');
+    }));
+
+    child.stderr.pipe(concatStream(function(data) {
+        var output = data.toString();
+        var expected = [
+            'licenz-b-a-a@1.0.0',
+            'licenz-b-b@1.0.0',
+            'licenz-b-c@1.0.0',
+        ];
+
+
+        t.ok(output, 'Has error output');
+
+        t.ok(
+            expected.every(function(item) {
+                return output.indexOf(item) !== -1;
+            }),
+            'Outputs non-passing modules’ name and version'
+        );
+    }));
+
+    child.on('close', function(exitCode) {
+        t.ok(exitCode, 'Exited with status code > 0');
+    });
 });
