@@ -84,7 +84,7 @@ paths.forEach(function(path) {
                 output = err;
             } else {
                 output = {
-                    message: path,
+                    message: (path ? path : 'Current directory'),
                 };
 
                 if (res.length) {
