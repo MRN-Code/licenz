@@ -112,7 +112,14 @@ paths.forEach(function(path) {
                 if (output.modules) {
                     formattedOutput = formattedOutput.concat(
                         output.modules.map(function(module) {
-                            return INDENT + module.name + '@' + module.version;
+                            var licenses = Array.isArray(module.licenses) ?
+                                module.licenses.join(', ') :
+                                module.licenses;
+
+                            return (
+                                INDENT + module.name + '@' + module.version +
+                                ': ' + licenses
+                            );
                         })
                     );
                 }
