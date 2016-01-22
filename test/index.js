@@ -157,18 +157,8 @@ test('CLI passes with known licenses', function(t) {
         );
     }));
 
-    /**
-     * license-checker unfortunately writes to stderr on every check.
-     * {@link https://github.com/davglass/license-checker/issues/46}
-     *
-     * @todo  Change to `t.notOk` check
-     */
     child.stderr.pipe(concatStream(function(data) {
-        t.equal(
-            data.toString().replace(/\n/g, ''),
-            'scanning ' + mockAPath,
-            'No stderr output'
-        );
+        t.notOk(data.toString(), 'No stderr output');
     }));
 
     child.on('close', function(exitCode) {
