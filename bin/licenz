@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+/* eslint-disable no-console,no-var,object-shorthand,prefer-arrow-callback,prefer-template */
 
 'use strict';
 
@@ -17,121 +18,125 @@ var pathsCompleteCount = 0;
 var pathsHaveErrors = false;
 
 function parseLicenses(val) {
-    return val
-        .split(',')
-        .map(function(item) {
-            return item.trim();
-        });
+  return val
+    .split(',')
+    .map(function trimItem(item) {
+      return item.trim();
+    });
 }
 
 function parseModules(val) {
-    return val
-        .split(',')
-        .map(function(item) {
-            return item.trim();
-        })
-        .reduce(function(whitelist, item) {
-            var pieces = item.split('@');
+  return val
+    .split(',')
+    .map(function trimItem(item) {
+      return item.trim();
+    })
+    .reduce(function parseVal(whitelist, item) {
+      var pieces = item.split('@');
 
-            if (pieces.length === 2) {
-                whitelist[pieces[0]] = pieces[1];
-            }
+      if (pieces.length === 2) {
+        /* eslint-disable no-param-reassign */
+        whitelist[pieces[0]] = pieces[1];
+        /* eslint-enable no-param-reassign */
+      }
 
-            return whitelist;
-        }, {});
+      return whitelist;
+    }, {});
 }
 
 program
-    .version(pkg.version)
-    .usage('[options] <path ...>')
-    .option('-l, --licenses <list>', 'Licenses whitelist', parseLicenses)
-    .option('-m, --modules <list>', 'Modules whitelist', parseModules)
-    .option('-j, --json', 'Output as JSON');
+  .version(pkg.version)
+  .usage('[options] <path ...>')
+  .option('-l, --licenses <list>', 'Licenses whitelist', parseLicenses)
+  .option('-m, --modules <list>', 'Modules whitelist', parseModules)
+  .option('-j, --json', 'Output as JSON');
 
-program.on('--help', function() {
-    console.log('  Examples:');
-    console.log('');
-    console.log('    $ licenz --licenses "Apache 2, WTFPL, Public Domain" ./path/to/module');
-    console.log('    $ licenz --modules "module-1@1.0.0, module2@^2.1.0" ./path/to/module');
-    console.log('');
+program.on('--help', function programHelp() {
+  console.log('  Examples:');
+  console.log('');
+  console.log('  $ licenz --licenses "Apache 2, WTFPL, Public Domain" ./path/to/module');
+  console.log('  $ licenz --modules "module-1@1.0.0, module2@^2.1.0" ./path/to/module');
+  console.log('');
 });
 
 program.parse(process.argv);
 
 if (program.licenses) {
-    options.whitelistLicenses = program.licenses;
+  options.whitelistLicenses = program.licenses;
 }
 if (program.modules) {
-    options.whitelistModules = program.modules;
+  options.whitelistModules = program.modules;
 }
 
 paths = program.args.length > 0 ? program.args : [undefined];
 
-paths.forEach(function(path) {
-    licenz(
-        assign({}, options, { path: path }),
-        function(err, res) {
-            var isError = false;
-            var formattedOutput;
-            var output;
+paths.forEach(function licenzPath(path) {
+  licenz(
+    assign({}, options, { path: path }),
+    function licenzCallback(err, res) {
+      var isError = false;
+      var formattedOutput;
+      var output;
 
-            if (err || res.length) {
-                isError = true;
-                pathsHaveErrors = true;
-            }
+      if (err || res.length) {
+        isError = true;
+        pathsHaveErrors = true;
+      }
 
-            if (err) {
-                output = err;
-            } else {
-                output = {
-                    message: (path ? path : 'Current directory'),
-                };
+      if (err) {
+        output = err;
+      } else {
+        output = {
+          /* eslint-disable no-unneeded-ternary */
+          message: (path ? path : 'Current directory'),
+          /* eslint-enable no-unneeded-ternary */
+        };
 
-                if (res.length) {
-                    output.message += ' contains unlicensed modules:';
+        if (res.length) {
+          output.message += ' contains unlicensed modules:';
 
-                    /**
-                     * Remove keys with empty values
-                     * {@link https://github.com/lodash/lodash/issues/707}
-                     */
-                    output.modules = res.map(function(module) {
-                        return omitBy(module, isUndefined);
-                    });
-                } else {
-                    output.message += ' 100% licensed!';
-                }
-            }
-
-            if (output instanceof Error) {
-                formattedOutput = output
-            } else if (program.json) {
-                formattedOutput = JSON.stringify(output, null, INDENT);
-            } else {
-                formattedOutput = [output.message];
-
-                if (output.modules) {
-                    formattedOutput = formattedOutput.concat(
-                        output.modules.map(function(module) {
-                            var licenses = Array.isArray(module.licenses) ?
-                                module.licenses.join(', ') :
-                                module.licenses;
-
-                            return (
-                                INDENT + module.name + '@' + module.version +
-                                ': ' + licenses
-                            );
-                        })
-                    );
-                }
-
-                formattedOutput = formattedOutput.join(EOL);
-            }
-
-            console[isError ? 'error' : 'log'](formattedOutput);
-
-            if (++pathsCompleteCount >= paths.length) {
-                process.exit(pathsHaveErrors ? 1 : 0);
-            }
+          /**
+           * Remove keys with empty values
+           * {@link https://github.com/lodash/lodash/issues/707}
+           */
+          output.modules = res.map(function removeEmpty(module) {
+            return omitBy(module, isUndefined);
+          });
+        } else {
+          output.message += ' 100% licensed!';
         }
-    );
+      }
+
+      if (output instanceof Error) {
+        formattedOutput = output;
+      } else if (program.json) {
+        formattedOutput = JSON.stringify(output, null, INDENT);
+      } else {
+        formattedOutput = [output.message];
+
+        if (output.modules) {
+          formattedOutput = formattedOutput.concat(
+            output.modules.map(function outputModule(module) {
+              var licenses = Array.isArray(module.licenses) ?
+                module.licenses.join(', ') :
+                module.licenses;
+
+              return (
+                INDENT + module.name + '@' + module.version +
+                ': ' + licenses
+              );
+            })
+          );
+        }
+
+        formattedOutput = formattedOutput.join(EOL);
+      }
+
+      console[isError ? 'error' : 'log'](formattedOutput);
+
+      if (++pathsCompleteCount >= paths.length) {
+        process.exit(pathsHaveErrors ? 1 : 0);
+      }
+    }
+  );
 });

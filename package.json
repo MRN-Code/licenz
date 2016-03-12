@@ -6,7 +6,7 @@
   "bin": "./bin/licenz",
   "scripts": {
     "docs": "jsdoc -d docs -R README.md lib/{*.js,**/*.js} && cp -R img docs",
-    "lint": "eslint bin lib test",
+    "lint": "eslint bin/licenz lib test",
     "postpublish": "npm run docs && gh-pages -d docs",
     "preversion": "git checkout master && git pull && npm ls",
     "publish-patch": "npm run preversion && npm version patch && git push origin master --tags && npm publish",
@@ -33,6 +33,8 @@
   "homepage": "https://github.com/MRN-Code/licenz#readme",
   "devDependencies": {
     "eslint": "^2.4.0",
+    "eslint-config-airbnb": "^6.1.0",
+    "eslint-plugin-react": "^4.2.1",
     "gh-pages": "^0.11.0",
     "jsdoc": "^3.4.0",
     "pre-commit": "^1.1.2",

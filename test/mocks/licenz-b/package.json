@@ -1,8 +1,8 @@
 {
   "dependencies": {
-    "licenz-b-a": "1.0.0",
-    "licenz-b-b": "1.0.0",
-    "licenz-b-c": "1.0.0"
+  "licenz-b-a": "1.0.0",
+  "licenz-b-b": "1.0.0",
+  "licenz-b-c": "1.0.0"
   },
   "license": "MIT",
   "name": "licenz-b",
