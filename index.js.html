@@ -26,7 +26,9 @@
     
     <section>
         <article>
-            <pre class="prettyprint source linenums"><code>/**
+            <pre class="prettyprint source linenums"><code>/* eslint-disable no-var,object-shorthand,prefer-arrow-callback,prefer-template */
+
+/**
  * @requires lib/utils/licenses
  * @requires lib/utils/modules
  */
@@ -47,31 +49,31 @@ var noop = require('lodash.noop');
  * @returns {object}
  */
 function mapLicenseCheckerResult(key, data) {
-    var keyPieces = key.split('@');
-    var licenses = data.licenses;
+  var keyPieces = key.split('@');
+  var licensesParam = data.licenses;
 
-    if (keyPieces.length &lt; 2) {
-        throw new Error(
-            'Key doesn\'t match expected &lt;name>@&lt;version> format: ' + key
-        );
-    }
+  if (keyPieces.length &lt; 2) {
+    throw new Error(
+      'Key doesn\'t match expected &lt;name>@&lt;version> format: ' + key
+    );
+  }
 
-    /**
-     * license-checker appends '*' to licenses when it's making assumptions
-     * based on string comparisions. We'll accept the assumptions as valid
-     * licenses.
-     */
-    if (licenses.slice(-1) === '*') {
-        licenses = licenses.slice(0, licenses.length - 1);
-    }
+  /**
+   * license-checker appends '*' to licenses when it's making assumptions
+   * based on string comparisions. We'll accept the assumptions as valid
+   * licenses.
+   */
+  if (licensesParam.slice(-1) === '*') {
+    licensesParam = licensesParam.slice(0, licensesParam.length - 1);
+  }
 
-    return {
-        licenses: licenses,
-        licenseFile: data.licenseFile,
-        name: keyPieces[0],
-        repository: data.repository,
-        version: keyPieces[1],
-    };
+  return {
+    licenses: licensesParam,
+    licenseFile: data.licenseFile,
+    name: keyPieces[0],
+    repository: data.repository,
+    version: keyPieces[1],
+  };
 }
 
 /**
@@ -80,59 +82,65 @@ function mapLicenseCheckerResult(key, data) {
  * @module module:licenz
  *
  * @param {object} options
- * @param {string} [options.path=process.cwd()] Path to begin license search. It should _package.json_ and _node_modules_. Defaults to the current directory.
+ * @param {string} [options.path=process.cwd()] Path to begin license search. It
+ * should _package.json_ and _node_modules_. Defaults to the current directory.
  * @param {array} [options.whitelistLicenses]
  * @param {object} [options.whitelistModules]
- * @param {checkCallback} [callback=noop] Callback fired after all licenses have been scanned.
+ * @param {checkCallback} [callback=noop] Callback fired after all licenses have
+ * been scanned.
  * @return {Promise}
  */
 function check(options, callback) {
-    callback = callback instanceof Function ? callback : noop;
+  var path = options.path || process.cwd();
+  var whitelistLicenses = options.whitelistLicenses;
+  var whitelistModules = options.whitelistModules;
 
-    var path = options.path || process.cwd();
-    var whitelistLicenses = options.whitelistLicenses;
-    var whitelistModules = options.whitelistModules;
+  /* eslint-disable no-param-reassign */
+  callback = callback instanceof Function ? callback : noop;
+  /* eslint-enable no-param-reassign */
 
-    if (whitelistModules) {
-        modules.whitelist(whitelistModules);
-    }
-    if (whitelistLicenses) {
-        licenses.whitelist(whitelistLicenses);
-    }
+  if (whitelistModules) {
+    modules.whitelist(whitelistModules);
+  }
+  if (whitelistLicenses) {
+    licenses.whitelist(whitelistLicenses);
+  }
 
-    return new Promise(function(resolve, reject) {
-        licenseChecker.init({
-            start: path,
-        }, function(json, err) {
-            if (err) {
-                callback(err);
-                reject(err);
-                return;
-            }
+  return new Promise(function licenseCheckerInit(resolve, reject) {
+    licenseChecker.init({
+      start: path,
+    }, function licenseCheckerCallback(json, err) {
+      if (err) {
+        callback(err);
+        reject(err);
+        return;
+      }
 
-            var results = Object.keys(json)
-                .map(function(key) {
-                    return mapLicenseCheckerResult(key, json[key]);
-                })
-                .filter(function(module) {
-                    // license-checker sometimes emits 'undefined' results
-                    if (
-                        module.name === 'undefined' &amp;&amp;
-                        module.version === 'undefined'
-                    ) {
-                        return;
-                    }
+      var results = Object.keys(json) // eslint-disable-line vars-on-top
+        .map(function mapResult(key) {
+          return mapLicenseCheckerResult(key, json[key]);
+        })
+        .filter(function filterModule(module) {
+          // license-checker sometimes emits 'undefined' results
+          if (
+            module.name === 'undefined' &amp;&amp;
+            module.version === 'undefined'
+          ) {
+            return; // eslint-disable-line array-callback-return
+          }
 
-                    return !(
-                        licenses.isPermitted(module.licenses) ||
-                        modules.isPermitted(module.name, module.version)
-                    );
-                });
-
-            callback(null, results);
-            resolve(results);
+          /* eslint-disable consistent-return */
+          return !(
+            licenses.isPermitted(module.licenses) ||
+            modules.isPermitted(module.name, module.version)
+          );
+          /* eslint-enable consistent-return */
         });
+
+      callback(null, results);
+      resolve(results);
     });
+  });
 }
 
 /**
@@ -158,7 +166,7 @@ module.exports = check;
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a> on Thu Feb 04 2016 13:42:12 GMT-0800 (PST)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a> on Fri Mar 11 2016 16:02:18 GMT-0800 (PST)
 </footer>
 
 <script> prettyPrint(); </script>
