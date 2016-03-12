@@ -1,6 +1,6 @@
 {
   "name": "licenz",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "Make sure your NPM modules have licenses.",
   "main": "lib/index.js",
   "bin": "./bin/licenz",
